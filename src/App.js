@@ -1,34 +1,33 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
-import "./styles/main.css";
+import { useEffect, useState } from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import Home from "./home";
+import "./main.css";
+import User from "./user";
 
 function App() {
-  const url = "https://dummyjson.com/users";
+  const url = "https://randomuser.me/api/?results=50";
   const [data, setData] = useState([]);
+  const [user, setUser] = useState('')
+  const location = useLocation()
+  const navigate = useNavigate()
+useEffect(()=>{
+  if(location.pathname==="/user"&&user===''){
+    navigate("/")
+  }
+})
+
   useEffect(() => {
     axios.get(url).then((res) => {
-      setData(res.data.users);
-      console.log(res.data);
+      setData(res.data.results);
     });
   }, []);
   return (
     <div className="App">
-      <div className="head"></div>
-      <div className="items">
-        {data.map((item, index) => (
-          <div className="item">
-            <div className="img">
-              <img src={item.image} alt={item.image} />
-            </div>
-            <div className="col1">
-              <p><b>{item.firstName + ' '+ item.lastName}</b> / {item.company.name}</p>
-            </div>
-            <div className="col2">{item.email}</div>
-            <div className="col3">{item.gender}</div>
-            <div className="col4">{item.phone}</div>
-          </div>
-        ))}
-      </div>
+      <Routes>
+        <Route path='/' element={<Home data={data} setUser={setUser} />}/>
+        <Route path="/user" element={<User user={user}/>}/>
+      </Routes>
     </div>
   );
 }
